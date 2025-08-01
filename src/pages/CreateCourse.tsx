@@ -151,12 +151,12 @@ const CreateCourse: React.FC = () => {
       const response = await fetch('http://localhost:8000/course_plan', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify({
+        body: new URLSearchParams({
           course_name: courseName,
-          daily_hours: parseInt(dailyCommitment)
-        }),
+          daily_hours: dailyCommitment
+        }).toString(),
       });
       
       if (!response.ok) {
