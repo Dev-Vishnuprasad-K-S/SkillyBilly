@@ -6,8 +6,28 @@ import { useCourse } from '../context/CourseContext';
 interface CourseSuggestion {
   id: string;
   title: string;
-  description: string;
-  estimatedTime: string;
+  reason: string;
+  potential_platforms: string;
+  skill_area: string;
+  level: string;
+  order: number;
+  source: string;
+}
+
+interface APIResponse {
+  filename: string;
+  skills: string[];
+  experience: number;
+  full_text_snippet: string;
+  course_list: {
+    title: string;
+    reason: string;
+    potential_platforms: string;
+    skill_area: string;
+    level: string;
+    order: number;
+    source: string;
+  }[];
 }
 
 const CreateCourse: React.FC = () => {
@@ -15,6 +35,7 @@ const CreateCourse: React.FC = () => {
   const { setCurrentCourse } = useCourse();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const [uploadMethod, setUploadMethod] = useState<'resume' | 'skills'>('resume');
   const [skills, setSkills] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -22,44 +43,91 @@ const CreateCourse: React.FC = () => {
   const [selectedSuggestion, setSelectedSuggestion] = useState<string>('');
   const [customCourseName, setCustomCourseName] = useState('');
   const [dailyCommitment, setDailyCommitment] = useState('2');
+  const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
+  const [experience, setExperience] = useState<number>(0);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/pdf') {
       setSelectedFile(file);
+      setError('');
     }
   };
 
   const handleSubmitInput = async () => {
     setLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      const mockSuggestions: CourseSuggestion[] = [
-        {
-          id: '1',
-          title: 'Advanced JavaScript & TypeScript',
-          description: 'Master modern JavaScript features and TypeScript for enterprise development',
-          estimatedTime: '3 weeks'
-        },
-        {
-          id: '2',
-          title: 'React & Next.js Mastery',
-          description: 'Build scalable web applications with React and Next.js',
-          estimatedTime: '4 weeks'
-        },
-        {
-          id: '3',
-          title: 'Full-Stack Development with Node.js',
-          description: 'Complete backend development with Node.js, Express, and databases',
-          estimatedTime: '5 weeks'
+    try {
+      if (uploadMethod === 'resume' && selectedFile) {
+        // Create FormData for file upload
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        
+        const response = await fetch('http://localhost:8000/upload-resume', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      ];
-      
-      setSuggestions(mockSuggestions);
+        
+        const data: APIResponse = await response.json();
+        
+        // Transform API response to our format
+        const transformedSuggestions: CourseSuggestion[] = data.course_list
+          .sort((a, b) => a.order - b.order)
+          .map((course, index) => ({
+            id: (index + 1).toString(),
+            title: course.title,
+            reason: course.reason,
+            potential_platforms: course.potential_platforms,
+            skill_area: course.skill_area,
+            level: course.level,
+            order: course.order,
+            source: course.source
+          }));
+        
+        setSuggestions(transformedSuggestions);
+        setExtractedSkills(data.skills);
+        setExperience(data.experience);
+        setStep(2);
+        
+      } else if (uploadMethod === 'skills' && skills.trim()) {
+        // For skills input, create mock suggestions (you can implement another API endpoint)
+        const mockSuggestions: CourseSuggestion[] = [
+          {
+            id: '1',
+            title: 'Advanced JavaScript & TypeScript',
+            reason: 'Based on your JavaScript skills, advancing to TypeScript will enhance your development capabilities',
+            potential_platforms: 'Udemy, Coursera, Pluralsight',
+            skill_area: 'javascript',
+            level: 'Advanced',
+            order: 1,
+            source: 'Udemy, Coursera'
+          },
+          {
+            id: '2',
+            title: 'React & Next.js Mastery',
+            reason: 'Building on your React knowledge, Next.js will help you create production-ready applications',
+            potential_platforms: 'Vercel, Udemy, Frontend Masters',
+            skill_area: 'react',
+            level: 'Advanced',
+            order: 2,
+            source: 'Frontend Masters'
+          }
+        ];
+        
+        setSuggestions(mockSuggestions);
+        setStep(2);
+      }
+    } catch (err) {
+      console.error('Error uploading resume:', err);
+      setError('Failed to process your resume. Please try again or check if the API server is running.');
+    } finally {
       setLoading(false);
-      setStep(2);
-    }, 2000);
+    }
   };
 
   const handleCreateCourse = async () => {
@@ -73,7 +141,7 @@ const CreateCourse: React.FC = () => {
       const newCourse = {
         id: Date.now().toString(),
         name: courseName,
-        description: selectedSuggestionData?.description || 'Custom course based on your requirements',
+        description: selectedSuggestionData?.reason || 'Custom course based on your requirements',
         tableOfContents: [
           'Introduction and Setup',
           'Core Concepts',
@@ -82,7 +150,7 @@ const CreateCourse: React.FC = () => {
           'Real-world Projects',
           'Assessment and Certification'
         ],
-        estimatedTime: selectedSuggestionData?.estimatedTime || '3 weeks',
+        estimatedTime: '3 weeks',
         dailyCommitment: `${dailyCommitment} hours`,
         content: 'Welcome to your personalized learning journey! Today we\'ll start with the fundamentals...'
       };
@@ -107,6 +175,19 @@ const CreateCourse: React.FC = () => {
           <h3 className="card-title" style={{ marginBottom: '1.5rem' }}>
             Step 1: Share Your Background
           </h3>
+          
+          {error && (
+            <div style={{
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              padding: '1rem',
+              borderRadius: '8px',
+              marginBottom: '1.5rem'
+            }}>
+              {error}
+            </div>
+          )}
           
           <div style={{ marginBottom: '2rem' }}>
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -190,6 +271,26 @@ const CreateCourse: React.FC = () => {
             Step 2: Choose Your Course
           </h3>
           
+          {extractedSkills.length > 0 && (
+            <div style={{
+              background: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              padding: '1rem',
+              borderRadius: '8px',
+              marginBottom: '1.5rem'
+            }}>
+              <h4 style={{ color: '#0369a1', marginBottom: '0.5rem' }}>
+                Extracted from your resume:
+              </h4>
+              <p style={{ color: '#0369a1', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                <strong>Experience:</strong> {experience} years
+              </p>
+              <p style={{ color: '#0369a1', fontSize: '0.875rem' }}>
+                <strong>Skills:</strong> {extractedSkills.join(', ')}
+              </p>
+            </div>
+          )}
+          
           <div className="course-suggestions">
             <h4 style={{ marginBottom: '1rem', color: '#374151' }}>
               Recommended Courses
@@ -213,12 +314,33 @@ const CreateCourse: React.FC = () => {
                   <h5 style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
                     {suggestion.title}
                   </h5>
-                  <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.25rem' }}>
-                    {suggestion.description}
+                  <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+                    {suggestion.reason}
                   </p>
-                  <p style={{ color: '#3b82f6', fontSize: '0.75rem', fontWeight: '500' }}>
-                    <Clock size={14} style={{ display: 'inline', marginRight: '0.25rem' }} />
-                    {suggestion.estimatedTime}
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span style={{
+                      padding: '0.125rem 0.5rem',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: '#dbeafe',
+                      color: '#1e40af'
+                    }}>
+                      {suggestion.level}
+                    </span>
+                    <span style={{
+                      padding: '0.125rem 0.5rem',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: '#f3f4f6',
+                      color: '#374151'
+                    }}>
+                      {suggestion.skill_area}
+                    </span>
+                  </div>
+                  <p style={{ color: '#6b7280', fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                    Available on: {suggestion.potential_platforms}
                   </p>
                 </div>
               </div>
