@@ -9,6 +9,7 @@ interface Course {
   dailyCommitment: string;
   content?: string;
   progress?: number;
+  coursePlan?: any; // Store the full course plan from API
 }
 
 interface CourseContextType {

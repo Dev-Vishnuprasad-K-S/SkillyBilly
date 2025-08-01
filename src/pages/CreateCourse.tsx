@@ -30,6 +30,15 @@ interface APIResponse {
   }[];
 }
 
+interface CoursePlanResponse {
+  course_plan: {
+    basic_info: {
+      course_title: string;
+      daily_hours: number;
+    };
+    [key: string]: any; // For day1, day2, etc.
+  };
+}
 const CreateCourse: React.FC = () => {
   const navigate = useNavigate();
   const { setCurrentCourse } = useCourse();
@@ -132,33 +141,69 @@ const CreateCourse: React.FC = () => {
 
   const handleCreateCourse = async () => {
     setLoading(true);
+    setError('');
     
     const selectedSuggestionData = suggestions.find(s => s.id === selectedSuggestion);
     const courseName = customCourseName || selectedSuggestionData?.title || 'Custom Course';
     
-    // Simulate API call to create course
-    setTimeout(() => {
+    try {
+      // Make API call to generate course plan
+      const response = await fetch('http://localhost:8000/course_plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          course_name: courseName,
+          daily_hours: parseInt(dailyCommitment)
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const coursePlanData: CoursePlanResponse = await response.json();
+      
+      // Extract days from the course plan (excluding basic_info)
+      const courseDays = Object.keys(coursePlanData.course_plan)
+        .filter(key => key.startsWith('day'))
+        .sort((a, b) => {
+          const dayA = parseInt(a.replace('day', ''));
+          const dayB = parseInt(b.replace('day', ''));
+          return dayA - dayB;
+        });
+      
+      // Create table of contents from daily topics
+      const tableOfContents = courseDays.map(dayKey => {
+        const dayData = coursePlanData.course_plan[dayKey];
+        return `Day ${dayData.day}: ${dayData.main_topic}`;
+      });
+      
+      // Calculate estimated time based on number of days and daily commitment
+      const totalDays = courseDays.length;
+      const estimatedWeeks = Math.ceil(totalDays / 7);
+      const estimatedTime = estimatedWeeks === 1 ? '1 week' : `${estimatedWeeks} weeks`;
+      
       const newCourse = {
         id: Date.now().toString(),
-        name: courseName,
+        name: coursePlanData.course_plan.basic_info.course_title,
         description: selectedSuggestionData?.reason || 'Custom course based on your requirements',
-        tableOfContents: [
-          'Introduction and Setup',
-          'Core Concepts',
-          'Advanced Techniques',
-          'Best Practices',
-          'Real-world Projects',
-          'Assessment and Certification'
-        ],
-        estimatedTime: '3 weeks',
-        dailyCommitment: `${dailyCommitment} hours`,
-        content: 'Welcome to your personalized learning journey! Today we\'ll start with the fundamentals...'
+        tableOfContents,
+        estimatedTime,
+        dailyCommitment: `${coursePlanData.course_plan.basic_info.daily_hours} hours`,
+        content: 'Welcome to your personalized learning journey! Today we\'ll start with the fundamentals...',
+        coursePlan: coursePlanData.course_plan // Store the full course plan
       };
       
       setCurrentCourse(newCourse);
       setLoading(false);
       navigate('/course-overview');
-    }, 1500);
+    } catch (err) {
+      console.error('Error creating course plan:', err);
+      setError('Failed to create course plan. Please try again or check if the API server is running.');
+      setLoading(false);
+    }
   };
 
   return (
