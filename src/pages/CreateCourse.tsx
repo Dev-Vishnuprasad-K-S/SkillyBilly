@@ -30,20 +30,22 @@ interface APIResponse {
   }[];
 }
 
+interface DayPlan {
+  day: number;
+  main_topic: string;
+  subtopics: string[];
+  detailed_explanations: string[];
+  estimated_time_allocation: { [key: string]: string };
+  learning_objectives: string[];
+}
+
 interface CoursePlanResponse {
   course_plan: {
     basic_info: {
       course_title: string;
       daily_hours: number;
     };
-    day1?: {
-      day: number;
-      main_topic: string;
-      subtopics: string[];
-      detailed_explanations: string[];
-      estimated_time_allocation: { [key: string]: string };
-      learning_objectives: string[];
-    };
+    [key: string]: DayPlan | { course_title: string; daily_hours: number } | undefined;
   };
 }
 const CreateCourse: React.FC = () => {
@@ -183,8 +185,11 @@ const CreateCourse: React.FC = () => {
       
       // Create table of contents from daily topics
       const tableOfContents = courseDays.map(dayKey => {
-        const dayData = coursePlanData.course_plan[dayKey];
-        return `Day ${dayData.day}: ${dayData.main_topic}`;
+        const dayData = coursePlanData.course_plan[dayKey] as DayPlan | undefined;
+        if (dayData) {
+          return `Day ${dayData.day}: ${dayData.main_topic}`;
+        }
+        return `Day ${dayKey}: (No data available)`;
       });
       
       // Calculate estimated time based on number of days and daily commitment
