@@ -2,6 +2,7 @@ import React from 'react';
 import { BookOpen, CheckCircle, Clock } from 'lucide-react';
 import { useCourse } from '../context/CourseContext';
 import ElevenLabsAgent from '../components/ElevenLabsAgent';
+import { pythonStudyMaterial } from '../data/demoPyhonDoc';
 
 const ActiveCourse: React.FC = () => {
   const { currentCourse } = useCourse();
@@ -32,9 +33,7 @@ const ActiveCourse: React.FC = () => {
   const currentDay = courseDays[0];
 
   // Prepare learning material for ElevenLabs (combine all detailed explanations)
-  const learningMaterial = currentDay?.detailed_explanations 
-    ? currentDay.detailed_explanations.join('\n\n')
-    : 'No detailed content available for this session.';
+  const learningMaterial = pythonStudyMaterial
   return (
     <div>
       <div className="page-header">
