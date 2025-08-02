@@ -81,268 +81,346 @@ const ActiveCourse: React.FC = () => {
         </div>
       </div>
 
-      {/* Course Content Section */}
+      {/* Course Content Document */}
       <div className="course-content">
-        <h2 style={{ color: '#1e293b', marginBottom: '1.5rem' }}>
+        <h1 style={{ 
+          color: '#1e293b', 
+          marginBottom: '2rem',
+          fontSize: '2.5rem',
+          fontWeight: '700',
+          borderBottom: '3px solid #3b82f6',
+          paddingBottom: '1rem'
+        }}>
           {currentDay ? `Day ${currentDay.day}: ${currentDay.main_topic}` : `Module 1: ${currentCourse.tableOfContents[0]}`}
-        </h2>
+        </h1>
 
-        {currentDay && (
+        {currentDay ? (
           <>
-            {/* Learning Objectives */}
+            {/* Learning Objectives Section */}
             {currentDay.learning_objectives && currentDay.learning_objectives.length > 0 && (
-              <div style={{
-                background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '2rem',
-                border: '1px solid #bae6fd'
-              }}>
-                <h3 style={{ color: '#0369a1', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <section style={{ marginBottom: '3rem' }}>
+                <h2 style={{ 
+                  color: '#374151', 
+                  fontSize: '1.75rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem'
+                }}>
                   🎯 Learning Objectives
-                </h3>
-                <ul style={{ color: '#0c4a6e', paddingLeft: '1.5rem', lineHeight: '1.7' }}>
-                  {currentDay.learning_objectives.map((objective: string, index: number) => (
-                    <li key={index} style={{ marginBottom: '0.5rem' }}>{objective}</li>
-                  ))}
-                </ul>
-              </div>
+                </h2>
+                <div style={{
+                  background: '#f8faff',
+                  padding: '2rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e0e7ff'
+                }}>
+                  <p style={{ 
+                    color: '#475569', 
+                    fontSize: '1.1rem',
+                    marginBottom: '1.5rem',
+                    lineHeight: '1.7'
+                  }}>
+                    By the end of today's session, you will be able to:
+                  </p>
+                  <ul style={{ 
+                    color: '#374151', 
+                    fontSize: '1rem',
+                    lineHeight: '1.8',
+                    paddingLeft: '1.5rem'
+                  }}>
+                    {currentDay.learning_objectives.map((objective: string, index: number) => (
+                      <li key={index} style={{ marginBottom: '0.75rem' }}>
+                        <strong>{objective}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
             )}
 
-            {/* Subtopics */}
-            {currentDay.subtopics && currentDay.subtopics.length > 0 && (
-              <div style={{
-                background: 'white',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '2rem',
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+            {/* Main Content Section */}
+            <section style={{ marginBottom: '3rem' }}>
+              <h2 style={{ 
+                color: '#374151', 
+                fontSize: '1.75rem',
+                fontWeight: '600',
+                marginBottom: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
               }}>
-                <h3 style={{ color: '#374151', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  📚 Topics We'll Cover Today
-                </h3>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-                  gap: '1rem' 
-                }}>
+                📚 Today's Learning Content
+              </h2>
+              
+              {/* Subtopics with detailed content */}
+              {currentDay.subtopics && currentDay.subtopics.length > 0 && (
+                <div style={{ marginBottom: '2rem' }}>
+                  <h3 style={{ 
+                    color: '#475569', 
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    marginBottom: '1rem'
+                  }}>
+                    Topics Covered:
+                  </h3>
+                  
                   {currentDay.subtopics.map((subtopic: string, index: number) => (
                     <div key={index} style={{
-                      background: '#f8fafc',
-                      padding: '1rem',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0'
+                      background: 'white',
+                      padding: '2rem',
+                      marginBottom: '1.5rem',
+                      borderRadius: '12px',
+                      border: '1px solid #e5e7eb',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
                     }}>
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '0.5rem',
-                        color: '#475569',
-                        fontWeight: '500'
+                      <h4 style={{
+                        color: '#1e293b',
+                        fontSize: '1.125rem',
+                        fontWeight: '600',
+                        marginBottom: '1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem'
                       }}>
                         <span style={{
-                          width: '1.5rem',
-                          height: '1.5rem',
+                          width: '2rem',
+                          height: '2rem',
                           borderRadius: '50%',
                           background: '#3b82f6',
                           color: 'white',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '0.75rem',
-                          fontWeight: '600'
+                          fontSize: '0.875rem',
+                          fontWeight: '700'
                         }}>
                           {index + 1}
                         </span>
                         {subtopic}
+                      </h4>
+                      
+                      {/* Time allocation for this subtopic */}
+                      {currentDay.estimated_time_allocation && Object.keys(currentDay.estimated_time_allocation).some(key => 
+                        key.toLowerCase().includes(subtopic.toLowerCase().split(' ')[0])
+                      ) && (
+                        <div style={{
+                          background: '#fef3c7',
+                          padding: '0.75rem 1rem',
+                          borderRadius: '6px',
+                          marginBottom: '1rem',
+                          display: 'inline-block'
+                        }}>
+                          <span style={{ 
+                            color: '#92400e', 
+                            fontSize: '0.875rem',
+                            fontWeight: '600'
+                          }}>
+                            ⏱️ Estimated Time: {
+                              Object.entries(currentDay.estimated_time_allocation).find(([key]) => 
+                                key.toLowerCase().includes(subtopic.toLowerCase().split(' ')[0])
+                              )?.[1] || '30 minutes'
+                            }
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Detailed explanation content */}
+                      <div style={{ 
+                        color: '#374151', 
+                        fontSize: '1rem',
+                        lineHeight: '1.7'
+                      }}>
+                        <p style={{ marginBottom: '1rem' }}>
+                          This section will cover the fundamental concepts and practical applications of {subtopic.toLowerCase()}. 
+                          You'll learn through a combination of theoretical explanations and hands-on examples.
+                        </p>
+                        
+                        <div style={{
+                          background: '#f8fafc',
+                          padding: '1.5rem',
+                          borderRadius: '8px',
+                          border: '1px solid #e2e8f0',
+                          marginBottom: '1rem'
+                        }}>
+                          <h5 style={{ 
+                            color: '#475569', 
+                            fontWeight: '600',
+                            marginBottom: '0.75rem'
+                          }}>
+                            Key Points to Remember:
+                          </h5>
+                          <ul style={{ paddingLeft: '1.5rem', color: '#64748b' }}>
+                            <li>Understanding the core principles and concepts</li>
+                            <li>Practical implementation and real-world applications</li>
+                            <li>Common pitfalls and how to avoid them</li>
+                            <li>Best practices and industry standards</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </section>
 
-            {/* Time Allocation */}
+            {/* Time Allocation Summary */}
             {currentDay.estimated_time_allocation && (
-              <div style={{
-                background: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                marginBottom: '2rem',
-                border: '1px solid #fde68a'
-              }}>
-                <h3 style={{ color: '#92400e', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  ⏰ Time Allocation for Today
-                </h3>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                  gap: '1rem' 
+              <section style={{ marginBottom: '3rem' }}>
+                <h2 style={{ 
+                  color: '#374151', 
+                  fontSize: '1.75rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem'
                 }}>
-                  {Object.entries(currentDay.estimated_time_allocation).map(([activity, time]) => (
-                    <div key={activity} style={{
-                      background: 'white',
-                      padding: '1rem',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                    }}>
-                      <span style={{ color: '#374151', fontWeight: '500' }}>{activity}</span>
-                      <span style={{ color: '#92400e', fontWeight: '700' }}>{time}</span>
-                    </div>
-                  ))}
+                  ⏰ Time Management Plan
+                </h2>
+                <div style={{
+                  background: 'linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)',
+                  padding: '2rem',
+                  borderRadius: '12px',
+                  border: '1px solid #fde68a'
+                }}>
+                  <p style={{ 
+                    color: '#92400e', 
+                    fontSize: '1.1rem',
+                    marginBottom: '1.5rem',
+                    lineHeight: '1.6'
+                  }}>
+                    Here's how we recommend you structure your {basicInfo?.daily_hours || currentCourse.dailyCommitment} learning session today:
+                  </p>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+                    gap: '1rem' 
+                  }}>
+                    {Object.entries(currentDay.estimated_time_allocation).map(([activity, time]) => (
+                      <div key={activity} style={{
+                        background: 'white',
+                        padding: '1.5rem',
+                        borderRadius: '8px',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                      }}>
+                        <h4 style={{ 
+                          color: '#374151', 
+                          fontWeight: '600',
+                          marginBottom: '0.5rem'
+                        }}>
+                          {activity}
+                        </h4>
+                        <div style={{ 
+                          color: '#92400e', 
+                          fontWeight: '700',
+                          fontSize: '1.25rem'
+                        }}>
+                          {time}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </section>
             )}
-          </>
-        )}
 
-        {/* Default content if no course plan data */}
-        {!currentDay && (
-          <div style={{
-            background: 'linear-gradient(135deg, #f8faff 0%, #eff6ff 100%)',
-            padding: '2rem',
-            borderRadius: '12px',
-            marginBottom: '2rem',
-            border: '1px solid #dbeafe'
-          }}>
-            <h3 style={{ color: '#1e40af', marginBottom: '1rem' }}>
-              Welcome to Your Learning Session!
-            </h3>
-            <p style={{ color: '#1e293b', lineHeight: '1.7', marginBottom: '1.5rem' }}>
-              {currentCourse.content || `
-                Today we're diving into the fundamentals of ${currentCourse.name}. 
-                This session will provide you with a solid foundation and practical understanding 
-                of the core concepts you'll need to master.
-              `}
-            </p>
-          </div>
-        )}
-
-        {/* AI Tutor Section */}
-        <div style={{
-          background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-          padding: '2rem',
-          borderRadius: '12px',
-          marginBottom: '2rem',
-          border: '1px solid #bae6fd'
-        }}>
-          <h3 style={{ color: '#0369a1', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            🤖 AI Learning Assistant
-          </h3>
-          <p style={{ color: '#0c4a6e', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-            Your personal AI tutor is ready to help you understand today's concepts. 
-            Ask questions, get explanations, and receive personalized guidance throughout your learning session.
-          </p>
-          
-          {/* ElevenLabs Widget Container */}
-          <div style={{
-            background: 'white',
-            padding: '1.5rem',
-            borderRadius: '12px',
-            border: '1px solid #bae6fd',
-            minHeight: '400px',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '1rem',
-              paddingBottom: '1rem',
-              borderBottom: '1px solid #e0f2fe'
-            }}>
-              <h4 style={{ color: '#0369a1', margin: 0 }}>Voice AI Tutor</h4>
-              <div style={{
+            {/* Detailed Study Material */}
+            <section style={{ marginBottom: '3rem' }}>
+              <h2 style={{ 
+                color: '#374151', 
+                fontSize: '1.75rem',
+                fontWeight: '600',
+                marginBottom: '1.5rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                background: 'rgba(16, 185, 129, 0.1)',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '20px',
-                fontSize: '0.875rem',
-                color: '#059669',
-                fontWeight: '500'
+                gap: '0.75rem'
               }}>
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#10b981'
-                }} />
-                Active
+                📖 Detailed Study Material
+              </h2>
+              <div style={{
+                background: 'white',
+                padding: '2rem',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+              }}>
+                <div style={{ 
+                  color: '#374151', 
+                  fontSize: '1rem',
+                  lineHeight: '1.8',
+                  whiteSpace: 'pre-line'
+                }}>
+                  {angularStudyMaterial}
+                </div>
+              </div>
+            </section>
+          </>
+        ) : (
+          /* Default content if no course plan data */
+          <section style={{ marginBottom: '3rem' }}>
+            <div style={{
+              background: 'white',
+              padding: '2rem',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb'
+            }}>
+              <h2 style={{ 
+                color: '#1e40af', 
+                fontSize: '1.5rem',
+                marginBottom: '1rem'
+              }}>
+                Welcome to Your Learning Session!
+              </h2>
+              <div style={{ 
+                color: '#374151', 
+                fontSize: '1rem',
+                lineHeight: '1.7'
+              }}>
+                <p style={{ marginBottom: '1.5rem' }}>
+                  {currentCourse.content || `
+                    Today we're diving into the fundamentals of ${currentCourse.name}. 
+                    This session will provide you with a solid foundation and practical understanding 
+                    of the core concepts you'll need to master.
+                  `}
+                </p>
+                
+                <h3 style={{ 
+                  color: '#475569', 
+                  fontSize: '1.25rem',
+                  marginBottom: '1rem'
+                }}>
+                  Course Modules:
+                </h3>
+                <ul style={{ paddingLeft: '1.5rem' }}>
+                  {currentCourse.tableOfContents.map((item, index) => (
+                    <li key={index} style={{ marginBottom: '0.5rem' }}>
+                      <strong>Module {index + 1}:</strong> {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-            
-            <div style={{ flex: 1 }}>
-              <ElevenLabsAgent 
-                agentId="your-agent-id" 
-                userName="Student"
-                learningMaterial={angularStudyMaterial}
-              />
-            </div>
-          </div>
-        </div>
+          </section>
+        )}
 
-        {/* Learning Activities */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '1rem',
-          marginBottom: '2rem'
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            border: '1px solid #e5e7eb',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-          }}>
-            <h4 style={{ color: '#374151', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              📖 Study Material
-            </h4>
-            <p style={{ color: '#6b7280', fontSize: '0.875rem', lineHeight: '1.5' }}>
-              Review key concepts and theoretical foundations
-            </p>
-          </div>
-          
-          <div style={{
-            background: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            border: '1px solid #e5e7eb',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-          }}>
-            <h4 style={{ color: '#374151', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🛠️ Hands-on Practice
-            </h4>
-            <p style={{ color: '#6b7280', fontSize: '0.875rem', lineHeight: '1.5' }}>
-              Apply what you learn with interactive exercises
-            </p>
-          </div>
-          
-          <div style={{
-            background: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            border: '1px solid #e5e7eb',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-          }}>
-            <h4 style={{ color: '#374151', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              ✅ Knowledge Check
-            </h4>
-            <p style={{ color: '#6b7280', fontSize: '0.875rem', lineHeight: '1.5' }}>
-              Test your understanding with quizzes
-            </p>
-          </div>
-        </div>
+        {/* ElevenLabs AI Tutor Widget */}
+        <ElevenLabsAgent 
+          agentId="your-agent-id" 
+          userName="Student"
+          learningMaterial={angularStudyMaterial}
+        />
 
         {/* Navigation */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <div style={{ 
+          marginTop: '3rem',
+          display: 'flex', 
+          gap: '1rem', 
+          justifyContent: 'center',
+          paddingTop: '2rem',
+          borderTop: '1px solid #e5e7eb'
+        }}>
           <button className="btn btn-secondary">
             Previous Day
           </button>
