@@ -294,7 +294,7 @@ const ActiveCourse: React.FC = () => {
                           fontWeight: '700',
                           fontSize: '1.25rem'
                         }}>
-                          {time}
+                          {time as any}
                         </div>
                       </div>
                     ))}
@@ -400,7 +400,7 @@ const ActiveCourse: React.FC = () => {
 
         {/* ElevenLabs AI Tutor Widget */}
         <ElevenLabsAgent 
-          agentId="your-agent-id" 
+          agentId="agent_0201k1jg3b1tes98191g1hy8jy0q" 
           userName="Student"
           learningMaterial={learningMaterial}
         />
