@@ -2,7 +2,6 @@ import React from 'react';
 import { BookOpen, CheckCircle, Clock } from 'lucide-react';
 import { useCourse } from '../context/CourseContext';
 import ElevenLabsAgent from '../components/ElevenLabsAgent';
-import { angularStudyMaterial } from '../data/demoAngularDoc';
 
 const ActiveCourse: React.FC = () => {
   const { currentCourse } = useCourse();
@@ -32,6 +31,10 @@ const ActiveCourse: React.FC = () => {
   // Get current day (for demo, we'll show day 1)
   const currentDay = courseDays[0];
 
+  // Prepare learning material for ElevenLabs (combine all detailed explanations)
+  const learningMaterial = currentDay?.detailed_explanations 
+    ? currentDay.detailed_explanations.join('\n\n')
+    : 'No detailed content available for this session.';
   return (
     <div>
       <div className="page-header">
@@ -201,10 +204,22 @@ const ActiveCourse: React.FC = () => {
                         {subtopic}
                       </h4>
                       
+                      {/* Display detailed explanation for this subtopic */}
+                      {currentDay.detailed_explanations && currentDay.detailed_explanations[index] && (
+                        <div style={{
+                          color: '#374151',
+                          fontSize: '1rem',
+                          lineHeight: '1.7',
+                          marginBottom: '1rem'
+                        }}>
+                          <div dangerouslySetInnerHTML={{ 
+                            __html: currentDay.detailed_explanations[index].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                          }} />
+                        </div>
+                      )}
+                      
                       {/* Time allocation for this subtopic */}
-                      {currentDay.estimated_time_allocation && Object.keys(currentDay.estimated_time_allocation).some(key => 
-                        key.toLowerCase().includes(subtopic.toLowerCase().split(' ')[0])
-                      ) && (
+                      {currentDay.estimated_time_allocation && currentDay.estimated_time_allocation[subtopic] && (
                         <div style={{
                           background: '#fef3c7',
                           padding: '0.75rem 1rem',
@@ -217,48 +232,10 @@ const ActiveCourse: React.FC = () => {
                             fontSize: '0.875rem',
                             fontWeight: '600'
                           }}>
-                            ⏱️ Estimated Time: {
-                              Object.entries(currentDay.estimated_time_allocation).find(([key]) => 
-                                key.toLowerCase().includes(subtopic.toLowerCase().split(' ')[0])
-                              )?.[1] || '30 minutes'
-                            }
+                            ⏱️ Estimated Time: {currentDay.estimated_time_allocation[subtopic]}
                           </span>
                         </div>
                       )}
-                      
-                      {/* Detailed explanation content */}
-                      <div style={{ 
-                        color: '#374151', 
-                        fontSize: '1rem',
-                        lineHeight: '1.7'
-                      }}>
-                        <p style={{ marginBottom: '1rem' }}>
-                          This section will cover the fundamental concepts and practical applications of {subtopic.toLowerCase()}. 
-                          You'll learn through a combination of theoretical explanations and hands-on examples.
-                        </p>
-                        
-                        <div style={{
-                          background: '#f8fafc',
-                          padding: '1.5rem',
-                          borderRadius: '8px',
-                          border: '1px solid #e2e8f0',
-                          marginBottom: '1rem'
-                        }}>
-                          <h5 style={{ 
-                            color: '#475569', 
-                            fontWeight: '600',
-                            marginBottom: '0.75rem'
-                          }}>
-                            Key Points to Remember:
-                          </h5>
-                          <ul style={{ paddingLeft: '1.5rem', color: '#64748b' }}>
-                            <li>Understanding the core principles and concepts</li>
-                            <li>Practical implementation and real-world applications</li>
-                            <li>Common pitfalls and how to avoid them</li>
-                            <li>Best practices and industry standards</li>
-                          </ul>
-                        </div>
-                      </div>
                     </div>
                   ))}
                 </div>
@@ -326,36 +303,52 @@ const ActiveCourse: React.FC = () => {
               </section>
             )}
 
-            {/* Detailed Study Material */}
-            <section style={{ marginBottom: '3rem' }}>
-              <h2 style={{ 
-                color: '#374151', 
-                fontSize: '1.75rem',
-                fontWeight: '600',
-                marginBottom: '1.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem'
-              }}>
-                📖 Detailed Study Material
-              </h2>
-              <div style={{
-                background: 'white',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #e5e7eb',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-              }}>
-                <div style={{ 
+            {/* Additional Study Notes */}
+            {currentDay.detailed_explanations && currentDay.detailed_explanations.length > 0 && (
+              <section style={{ marginBottom: '3rem' }}>
+                <h2 style={{ 
                   color: '#374151', 
-                  fontSize: '1rem',
-                  lineHeight: '1.8',
-                  whiteSpace: 'pre-line'
+                  fontSize: '1.75rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem'
                 }}>
-                  {angularStudyMaterial}
+                  📝 Additional Study Notes
+                </h2>
+                <div style={{
+                  background: 'white',
+                  padding: '2rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
+                }}>
+                  <div style={{ 
+                    color: '#374151', 
+                    fontSize: '1rem',
+                    lineHeight: '1.8'
+                  }}>
+                    <p style={{ marginBottom: '1rem', fontStyle: 'italic', color: '#64748b' }}>
+                      Review these key concepts and explanations to reinforce your understanding:
+                    </p>
+                    {currentDay.detailed_explanations.map((explanation: string, index: number) => (
+                      <div key={index} style={{
+                        marginBottom: '1.5rem',
+                        padding: '1.5rem',
+                        background: '#f8fafc',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div dangerouslySetInnerHTML={{ 
+                          __html: explanation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
           </>
         ) : (
           /* Default content if no course plan data */
@@ -409,7 +402,7 @@ const ActiveCourse: React.FC = () => {
         <ElevenLabsAgent 
           agentId="your-agent-id" 
           userName="Student"
-          learningMaterial={angularStudyMaterial}
+          learningMaterial={learningMaterial}
         />
 
         {/* Navigation */}
