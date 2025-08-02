@@ -19,18 +19,8 @@ const ActiveCourse: React.FC = () => {
   const coursePlan = currentCourse.coursePlan;
   const basicInfo = coursePlan?.basic_info;
   
-  // Get all day entries from course plan
-  const courseDays = coursePlan ? Object.keys(coursePlan)
-    .filter(key => key.startsWith('day'))
-    .sort((a, b) => {
-      const dayA = parseInt(a.replace('day', ''));
-      const dayB = parseInt(b.replace('day', ''));
-      return dayA - dayB;
-    })
-    .map(dayKey => coursePlan[dayKey]) : [];
-
-  // Get current day (for demo, we'll show day 1)
-  const currentDay = courseDays[0];
+  // Get current day data (only day1 is available from API)
+  const currentDay = coursePlan?.day1;
 
   // Prepare learning material for ElevenLabs (combine all detailed explanations)
   const learningMaterial = pythonStudyMaterial
@@ -62,7 +52,7 @@ const ActiveCourse: React.FC = () => {
               <h3 className="card-title">Progress</h3>
               <div className="card-value">15%</div>
               <p style={{ color: '#64748b', fontSize: '0.875rem' }}>
-                Day 1 of {courseDays.length || currentCourse.tableOfContents.length}
+                Day 1 of {currentCourse.tableOfContents.length}
               </p>
             </div>
             <CheckCircle size={32} style={{ color: '#10b981' }} />

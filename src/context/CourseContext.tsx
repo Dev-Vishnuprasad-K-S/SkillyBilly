@@ -14,7 +14,14 @@ interface Course {
       course_title: string;
       daily_hours: number;
     };
-    [key: string]: any; // For day1, day2, etc.
+    day1?: {
+      day: number;
+      main_topic: string;
+      subtopics: string[];
+      detailed_explanations: string[];
+      estimated_time_allocation: { [key: string]: string };
+      learning_objectives: string[];
+    };
   };
 }
 
